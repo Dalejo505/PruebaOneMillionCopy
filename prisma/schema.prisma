@@ -1,0 +1,35 @@
+// Prisma schema — One Million Copy — Leads API
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum FuenteLead {
+  instagram
+  facebook
+  landing_page
+  referido
+  otro
+}
+
+model Lead {
+  id                String      @id @default(cuid())
+  nombre            String
+  email             String      @unique
+  telefono          String?
+  fuente            FuenteLead
+  producto_interes  String?
+  presupuesto       Decimal?    @db.Decimal(12, 2)
+  deletedAt         DateTime?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  @@index([fuente])
+  @@index([createdAt])
+  @@map("leads")
+}
