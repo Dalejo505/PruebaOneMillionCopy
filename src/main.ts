@@ -11,7 +11,7 @@ async function bootstrap() {
   const isProd = process.env.NODE_ENV === 'production';
   const swaggerEnabled =
     !isProd || process.env.ENABLE_SWAGGER === 'true';
-  // Swagger UI usa scripts inline; la CSP estricta de Helmet bloquea /docs si no se relaja.
+  // Swagger UI requiere CSP relajada en /docs
   app.use(
     swaggerEnabled
       ? helmet({ contentSecurityPolicy: false })
@@ -30,9 +30,7 @@ async function bootstrap() {
   if (swaggerEnabled) {
     const swaggerConfig = new DocumentBuilder()
       .setTitle('One Million Copy — Leads API')
-      .setDescription(
-        'API REST para leads de embudos de marketing + resumen con IA.',
-      )
+      .setDescription('Leads y resúmenes ejecutivos.')
       .setVersion('1.0')
       .build();
     const document = SwaggerModule.createDocument(app, swaggerConfig);

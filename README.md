@@ -1,6 +1,6 @@
 # One Million Copy — API de Leads
 
-Backend REST para registrar y consultar **leads** de embudos de marketing, con estadísticas y **resumen ejecutivo** vía LLM (OpenAI) o **mock documentado** sin costo.
+API REST para leads de marketing: alta, listado filtrado, estadísticas y resumen ejecutivo (OpenAI o respuesta local cuando no hay clave).
 
 ## Tecnologías
 
@@ -83,11 +83,11 @@ npm run db:seed
 
 `instagram`, `facebook`, `landing_page`, `referido`, `otro`
 
-### Decisiones documentadas
+### Notas de comportamiento
 
-- **Promedio de presupuesto:** solo se promedian registros con `presupuesto` definido; si ninguno tiene valor, la API devuelve `null` en `promedioPresupuestoUsd`.
-- **Fechas:** si envías solo la fecha (`YYYY-MM-DD`), `fechaDesde` se interpreta al inicio del día y `fechaHasta` al final del día (hora local).
-- **IA:** con `USE_MOCK_AI=true` o sin `OPENAI_API_KEY` se usa `MockLlmProvider`. Con clave y `USE_MOCK_AI` distinto de `true`, se llama a la API de OpenAI (`OPENAI_MODEL` por defecto `gpt-4o-mini`).
+- **Promedio de presupuesto:** solo entran leads con `presupuesto` informado; si no hay ninguno, `promedioPresupuestoUsd` es `null`.
+- **Fechas:** con `YYYY-MM-DD`, `fechaDesde` es inicio de día y `fechaHasta` fin de día (hora local).
+- **Resúmenes:** sin `OPENAI_API_KEY` o con `USE_MOCK_AI=true` se genera texto local; con clave y `USE_MOCK_AI` distinto de `true` se usa OpenAI (`OPENAI_MODEL`, por defecto `gpt-4o-mini`).
 
 ## Probar endpoints (ejemplos)
 
@@ -101,7 +101,7 @@ curl -s "http://localhost:3000/leads?page=1&limit=5&fuente=instagram"
 # Estadísticas
 curl -s http://localhost:3000/leads/stats
 
-# Resumen IA (mock por defecto)
+# Resumen ejecutivo (/leads/ai/summary)
 curl -s -X POST http://localhost:3000/leads/ai/summary -H "Content-Type: application/json" -d "{\"fuente\":\"instagram\"}"
 ```
 
@@ -117,12 +117,8 @@ curl -s -X POST http://localhost:3000/leads/ai/summary -H "Content-Type: applica
 | `npm run db:seed` | Ejecutar seed Prisma |
 | `npm run db:studio` | Prisma Studio |
 
-## Estructura relevante
+## Estructura
 
-- `src/leads/` — CRUD, consultas y estadísticas.
-- `src/ai/` — `POST /leads/ai/summary`, contrato `LlmPort`, implementaciones **mock** y **OpenAI**.
-- `prisma/` — Esquema, migraciones y `seed.ts`.
-
-## Entrega
-
-Incluye `.env.example` (sin secretos reales) y este README. Los commits frecuentes en GitHub forman parte de la evaluación del proceso.
+- `src/leads/` — CRUD, listados, stats.
+- `src/ai/` — `POST /leads/ai/summary` y proveedores de resumen.
+- `prisma/` — esquema, migraciones, seed.

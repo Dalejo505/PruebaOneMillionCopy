@@ -33,7 +33,6 @@ export class LeadsController {
     return this.leadsService.create(dto);
   }
 
-  /** Debe ir antes de :id para que "stats" no se interprete como id */
   @Get('stats')
   @ApiOperation({ summary: 'Estadísticas agregadas' })
   stats() {

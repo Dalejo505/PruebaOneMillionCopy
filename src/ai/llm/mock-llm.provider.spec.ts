@@ -7,7 +7,7 @@ describe('MockLlmProvider', () => {
   it('devuelve mensaje cuando no hay leads', async () => {
     const text = await provider.executiveSummary([]);
     expect(text).toContain('No hay leads');
-    expect(text).toContain('MockLlmProvider');
+    expect(text).toContain('filtro');
   });
 
   it('incluye fuente principal y recomendaciones con datos', async () => {

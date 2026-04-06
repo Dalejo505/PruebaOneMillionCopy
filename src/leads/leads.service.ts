@@ -32,7 +32,6 @@ export class LeadsService {
     };
   }
 
-  /** Misma lógica de filtro que listado y resumen IA */
   buildWhereClause(filter: LeadsFilter): Prisma.LeadWhereInput {
     const where: Prisma.LeadWhereInput = { deletedAt: null };
     if (filter.fuente) {
@@ -215,7 +214,6 @@ export class LeadsService {
     };
   }
 
-  /** Leads para el resumen IA (mismos filtros que listado, sin paginar) */
   async findManyForSummary(filter: LeadsFilter): Promise<LeadResponse[]> {
     const where = this.buildWhereClause(filter);
     const items = await this.prisma.lead.findMany({

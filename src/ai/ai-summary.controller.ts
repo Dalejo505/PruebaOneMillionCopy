@@ -10,9 +10,8 @@ export class AiSummaryController {
 
   @Post('summary')
   @ApiOperation({
-    summary: 'Resumen ejecutivo con IA',
-    description:
-      'Filtra leads (opcional) y genera un resumen vía LLM o mock documentado.',
+    summary: 'Resumen ejecutivo',
+    description: 'Filtros opcionales; el texto depende de OpenAI o del proveedor local.',
   })
   async summary(
     @Body(new DefaultValuePipe({})) body: SummaryFilterDto,

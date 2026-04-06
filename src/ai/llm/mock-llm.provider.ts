@@ -2,22 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { LeadResponse } from '../../leads/leads.service';
 import { LlmPort } from './llm.port';
 
-/**
- * Mock sin costo: replica la forma del resumen esperado.
- * Activar con USE_MOCK_AI=true o sin OPENAI_API_KEY.
- */
+/** Resumen local cuando no hay API de modelo externa. */
 @Injectable()
 export class MockLlmProvider implements LlmPort {
   async executiveSummary(leads: LeadResponse[]): Promise<string> {
     const n = leads.length;
     if (n === 0) {
-      return [
-        '## Resumen ejecutivo (mock)',
-        '',
-        'No hay leads que coincidan con el filtro aplicado.',
-        '',
-        '_Generado por MockLlmProvider — sustituir por proveedor real en producción._',
-      ].join('\n');
+      return ['## Resumen ejecutivo', '', 'No hay leads que coincidan con el filtro.'].join(
+        '\n',
+      );
     }
 
     const byFuente = new Map<string, number>();
@@ -34,23 +27,21 @@ export class MockLlmProvider implements LlmPort {
         : null;
 
     return [
-      '## Resumen ejecutivo (mock)',
+      '## Resumen ejecutivo',
       '',
       `### Análisis general`,
       `Se analizaron **${n}** lead(s).`,
       avg !== null
-        ? `Presupuesto medio declarado (muestra con dato): **USD ${avg.toFixed(2)}**.`
-        : 'Ningún lead en el conjunto filtrado incluye presupuesto.',
+        ? `Presupuesto medio (solo leads con dato): **USD ${avg.toFixed(2)}**.`
+        : 'Ningún lead del conjunto tiene presupuesto informado.',
       '',
       `### Fuente principal`,
-      `**${main[0]}** concentra la mayor cantidad de registros (**${main[1]}**).`,
+      `**${main[0]}** concentra más registros (**${main[1]}**).`,
       '',
       `### Recomendaciones`,
-      '- Reforzar creatividades y presupuesto en el canal dominante.',
-      '- Homogeneizar captura de presupuesto para mejorar el forecast.',
-      '- Revisar leads sin producto de interés para calificar más rápido.',
-      '',
-      '_Generado por MockLlmProvider — listo para intercambiar por OpenAI u otro LLM._',
+      '- Reforzar el canal dominante.',
+      '- Unificar la captura de presupuesto para poder proyectar.',
+      '- Priorizar seguimiento en leads sin producto de interés.',
     ].join('\n');
   }
 }
