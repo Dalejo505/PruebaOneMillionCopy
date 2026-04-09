@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { LeadResponse } from '../../leads/leads.service';
-import { LlmPort } from './llm.port';
+import { LlmChatHistoryItem, LlmPort } from './llm.port';
 
 /** Resumen local cuando no hay API de modelo externa. */
 @Injectable()
@@ -42,6 +42,32 @@ export class MockLlmProvider implements LlmPort {
       '- Reforzar el canal dominante.',
       '- Unificar la captura de presupuesto para poder proyectar.',
       '- Priorizar seguimiento en leads sin producto de interés.',
+    ].join('\n');
+  }
+
+  async assistantChat(input: {
+    leads: LeadResponse[];
+    userMessage: string;
+    history: LlmChatHistoryItem[];
+  }): Promise<string> {
+    const { leads, userMessage } = input;
+    if (leads.length === 0) {
+      return [
+        'No hay leads que coincidan con los filtros enviados desde el cliente.',
+        'No puedo extraer métricas hasta que exista al menos un registro en ese segmento.',
+      ].join('\n\n');
+    }
+    const summary = await this.executiveSummary(leads);
+    return [
+      `Tengo **${leads.length}** lead(s) en el segmento filtrado.`,
+      '',
+      '### Contexto automático (mock del servidor)',
+      summary,
+      '',
+      `### Sobre tu mensaje`,
+      `«${userMessage.trim().slice(0, 500)}${userMessage.length > 500 ? '…' : ''}»`,
+      '',
+      '_Este backend usa el proveedor **mock** (`USE_MOCK_AI=true` o sin `OPENAI_API_KEY`). Con OpenAI activo, la respuesta será conversacional y adaptada a tu pregunta._',
     ].join('\n');
   }
 }

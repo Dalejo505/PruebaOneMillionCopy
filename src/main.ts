@@ -9,6 +9,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const isProd = process.env.NODE_ENV === 'production';
+  if (!isProd) {
+    app.enableCors({ origin: true, credentials: true });
+  }
   const swaggerEnabled =
     !isProd || process.env.ENABLE_SWAGGER === 'true';
   // Swagger UI requiere CSP relajada en /docs
